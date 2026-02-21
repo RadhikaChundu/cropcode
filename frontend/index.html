@@ -1,0 +1,1612 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#0d2818" />
+  <title>KrishiSahay — AI Farmer Assistant</title>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;600&family=Noto+Sans+Devanagari:wght@400;600&display=swap"
+    rel="stylesheet" />
+  <style>
+    /* =========================================================
+   KRISHISAHAY — Design System
+   Theme: Living Field — organic, earthy, luminous
+   ========================================================= */
+    :root {
+      --soil: #0d2818;
+      --leaf: #1a4731;
+      --stem: #2d6a4f;
+      --sprout: #52b788;
+      --dew: #95d5b2;
+      --sky: #d8f3dc;
+      --sun: #f5c842;
+      --terra: #8b4513;
+      --clay: #c68642;
+      --fog: rgba(255, 255, 255, 0.06);
+      --glass: rgba(255, 255, 255, 0.04);
+      --radius: 20px;
+      --t: cubic-bezier(.22, 1, .36, 1);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box
+    }
+
+    html {
+      scroll-behavior: smooth
+    }
+
+    body {
+      background: var(--soil);
+      color: #e8f5e9;
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 400;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ---- ANIMATED FIELD BACKGROUND ---- */
+    .field-bg {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 20% 80%, rgba(45, 106, 79, .35) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 50% at 80% 20%, rgba(26, 71, 49, .4) 0%, transparent 60%),
+        radial-gradient(ellipse 100% 80% at 50% 110%, rgba(13, 40, 24, .8) 0%, transparent 70%),
+        linear-gradient(175deg, #061410 0%, #0d2818 40%, #0a2015 100%);
+    }
+
+    .stars {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      overflow: hidden
+    }
+
+    .star {
+      position: absolute;
+      border-radius: 50%;
+      background: var(--dew);
+      animation: twinkle var(--d, 3s) ease-in-out infinite;
+      animation-delay: var(--delay, 0s);
+    }
+
+    @keyframes twinkle {
+
+      0%,
+      100% {
+        opacity: .1;
+        transform: scale(1)
+      }
+
+      50% {
+        opacity: .7;
+        transform: scale(1.5)
+      }
+    }
+
+    /* Firefly particles */
+    .fireflies {
+      position: fixed;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none
+    }
+
+    .firefly {
+      position: absolute;
+      width: 3px;
+      height: 3px;
+      border-radius: 50%;
+      background: var(--sun);
+      box-shadow: 0 0 6px 2px rgba(245, 200, 66, .6);
+      animation: fly var(--d) ease-in-out infinite;
+      animation-delay: var(--dl);
+    }
+
+    @keyframes fly {
+      0% {
+        transform: translate(0, 0) scale(1);
+        opacity: 0
+      }
+
+      20% {
+        opacity: 1
+      }
+
+      80% {
+        opacity: .8
+      }
+
+      100% {
+        transform: translate(var(--tx), var(--ty)) scale(.5);
+        opacity: 0
+      }
+    }
+
+    /* ---- LAYOUT ---- */
+    .app {
+      position: relative;
+      z-index: 10;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column
+    }
+
+    /* ---- HEADER ---- */
+    header {
+      padding: 24px 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid rgba(82, 183, 136, .15);
+      background: rgba(13, 40, 24, .7);
+      backdrop-filter: blur(20px);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      text-decoration: none
+    }
+
+    .logo-icon {
+      width: 48px;
+      height: 48px;
+      background: linear-gradient(135deg, var(--sprout), var(--sun));
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      box-shadow: 0 4px 20px rgba(82, 183, 136, .3);
+      animation: breathe 4s ease-in-out infinite;
+    }
+
+    @keyframes breathe {
+
+      0%,
+      100% {
+        box-shadow: 0 4px 20px rgba(82, 183, 136, .3)
+      }
+
+      50% {
+        box-shadow: 0 4px 30px rgba(82, 183, 136, .6)
+      }
+    }
+
+    .logo-text {
+      font-family: 'Playfair Display', serif;
+      font-size: 22px;
+      font-weight: 900;
+      background: linear-gradient(135deg, var(--dew), var(--sun));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text
+    }
+
+    .logo-sub {
+      font-size: 11px;
+      color: var(--sprout);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-top: 1px
+    }
+
+    .lang-selector {
+      display: flex;
+      gap: 6px;
+      align-items: center
+    }
+
+    .lang-btn {
+      padding: 6px 12px;
+      border-radius: 20px;
+      border: 1px solid rgba(82, 183, 136, .3);
+      background: transparent;
+      color: var(--dew);
+      font-size: 12px;
+      font-family: 'DM Sans', sans-serif;
+      cursor: pointer;
+      transition: all .25s var(--t);
+    }
+
+    .lang-btn:hover,
+    .lang-btn.active {
+      background: var(--sprout);
+      color: var(--soil);
+      border-color: var(--sprout);
+      font-weight: 600
+    }
+
+    /* ---- HERO ---- */
+    .hero {
+      padding: 80px 32px 60px;
+      text-align: center;
+      position: relative;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 20px;
+      border-radius: 40px;
+      border: 1px solid rgba(82, 183, 136, .3);
+      background: rgba(82, 183, 136, .08);
+      font-size: 12px;
+      color: var(--sprout);
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      margin-bottom: 32px;
+      animation: fadeDown .8s var(--t) both;
+    }
+
+    .hero-badge .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--sprout);
+      animation: pulse 2s infinite
+    }
+
+    @keyframes pulse {
+
+      0%,
+      100% {
+        opacity: 1;
+        transform: scale(1)
+      }
+
+      50% {
+        opacity: .5;
+        transform: scale(.8)
+      }
+    }
+
+    .hero-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(42px, 7vw, 80px);
+      font-weight: 900;
+      line-height: 1.05;
+      animation: fadeDown .8s .15s var(--t) both;
+    }
+
+    .hero-title .line1 {
+      background: linear-gradient(135deg, #fff 0%, var(--dew) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      display: block;
+    }
+
+    .hero-title .line2 {
+      background: linear-gradient(135deg, var(--sprout) 0%, var(--sun) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      display: block;
+    }
+
+    .hero-sub {
+      margin-top: 20px;
+      font-size: 18px;
+      color: rgba(200, 230, 210, .7);
+      max-width: 520px;
+      margin-left: auto;
+      margin-right: auto;
+      line-height: 1.6;
+      animation: fadeDown .8s .3s var(--t) both;
+    }
+
+    @keyframes fadeDown {
+      from {
+        opacity: 0;
+        transform: translateY(-24px)
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0)
+      }
+    }
+
+    /* ---- STATS STRIP ---- */
+    .stats-strip {
+      display: flex;
+      justify-content: center;
+      gap: 40px;
+      margin-top: 48px;
+      animation: fadeDown .8s .45s var(--t) both;
+    }
+
+    .stat {
+      text-align: center
+    }
+
+    .stat-num {
+      font-family: 'Playfair Display', serif;
+      font-size: 32px;
+      font-weight: 900;
+      color: var(--sun);
+      display: block
+    }
+
+    .stat-label {
+      font-size: 11px;
+      color: var(--sprout);
+      text-transform: uppercase;
+      letter-spacing: 1.5px
+    }
+
+    /* ---- SEARCH CONTAINER ---- */
+    .search-section {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 0 24px 60px;
+      animation: fadeUp .8s .5s var(--t) both;
+    }
+
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(40px)
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0)
+      }
+    }
+
+    .search-box {
+      background: rgba(255, 255, 255, .05);
+      border: 1px solid rgba(82, 183, 136, .2);
+      border-radius: 24px;
+      padding: 8px 8px 8px 24px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      transition: all .3s var(--t);
+      backdrop-filter: blur(10px);
+    }
+
+    .search-box:focus-within {
+      border-color: var(--sprout);
+      box-shadow: 0 0 0 4px rgba(82, 183, 136, .15), 0 20px 60px rgba(0, 0, 0, .3);
+      background: rgba(255, 255, 255, .07);
+    }
+
+    .search-icon {
+      font-size: 20px;
+      flex-shrink: 0
+    }
+
+    #searchInput {
+      flex: 1;
+      background: none;
+      border: none;
+      outline: none;
+      color: #e8f5e9;
+      font-size: 16px;
+      font-family: 'DM Sans', sans-serif;
+      padding: 12px 0;
+    }
+
+    #searchInput::placeholder {
+      color: rgba(200, 230, 210, .4)
+    }
+
+    .voice-btn {
+      width: 52px;
+      height: 52px;
+      border-radius: 16px;
+      background: linear-gradient(135deg, rgba(82, 183, 136, .2), rgba(82, 183, 136, .1));
+      border: 1px solid rgba(82, 183, 136, .3);
+      color: var(--sprout);
+      font-size: 20px;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: all .25s var(--t);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .voice-btn:hover {
+      background: rgba(82, 183, 136, .3);
+      transform: scale(1.05)
+    }
+
+    .voice-btn.recording {
+      background: rgba(220, 38, 38, .2);
+      border-color: #ef4444;
+      color: #ef4444;
+      animation: rec .8s infinite
+    }
+
+    @keyframes rec {
+
+      0%,
+      100% {
+        box-shadow: 0 0 0 0 rgba(239, 68, 68, .4)
+      }
+
+      50% {
+        box-shadow: 0 0 0 8px rgba(239, 68, 68, 0)
+      }
+    }
+
+    .ask-btn {
+      padding: 14px 28px;
+      border-radius: 16px;
+      background: linear-gradient(135deg, var(--sprout), #2d8653);
+      border: none;
+      color: #fff;
+      font-size: 15px;
+      font-weight: 600;
+      font-family: 'DM Sans', sans-serif;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: all .25s var(--t);
+      white-space: nowrap;
+    }
+
+    .ask-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 30px rgba(82, 183, 136, .4)
+    }
+
+    .ask-btn:active {
+      transform: translateY(0)
+    }
+
+    .ask-btn:disabled {
+      opacity: .6;
+      cursor: not-allowed;
+      transform: none
+    }
+
+    /* ---- CATEGORY PILLS ---- */
+    .categories {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 16px;
+      justify-content: center
+    }
+
+    .cat-pill {
+      padding: 8px 18px;
+      border-radius: 40px;
+      font-size: 13px;
+      border: 1px solid rgba(82, 183, 136, .2);
+      background: rgba(82, 183, 136, .06);
+      color: var(--dew);
+      cursor: pointer;
+      transition: all .2s var(--t);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .cat-pill:hover {
+      background: rgba(82, 183, 136, .15);
+      border-color: rgba(82, 183, 136, .4)
+    }
+
+    .cat-pill.active {
+      background: var(--sprout);
+      color: var(--soil);
+      border-color: var(--sprout);
+      font-weight: 600
+    }
+
+    /* ---- ANSWER PANEL ---- */
+    .answer-panel {
+      max-width: 760px;
+      margin: 0 auto 40px;
+      padding: 0 24px;
+      animation: fadeUp .5s var(--t) both;
+    }
+
+    .answer-card {
+      background: rgba(255, 255, 255, .04);
+      border: 1px solid rgba(82, 183, 136, .2);
+      border-radius: 24px;
+      overflow: hidden;
+      backdrop-filter: blur(20px);
+    }
+
+    .answer-header {
+      padding: 20px 28px;
+      border-bottom: 1px solid rgba(82, 183, 136, .1);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .answer-query {
+      font-size: 13px;
+      color: var(--sprout);
+      letter-spacing: .5px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .answer-query span {
+      font-size: 15px;
+      color: #e8f5e9;
+      font-weight: 500
+    }
+
+    .answer-meta {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-shrink: 0
+    }
+
+    .method-badge {
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 11px;
+      letter-spacing: .5px;
+      border: 1px solid;
+    }
+
+    .method-badge.ibm {
+      border-color: rgba(37, 99, 235, .5);
+      color: #93c5fd;
+      background: rgba(37, 99, 235, .1)
+    }
+
+    .method-badge.kb {
+      border-color: rgba(82, 183, 136, .4);
+      color: var(--sprout);
+      background: rgba(82, 183, 136, .1)
+    }
+
+    .answer-body {
+      padding: 28px;
+      line-height: 1.8;
+      font-size: 15px;
+      color: rgba(220, 240, 225, .9)
+    }
+
+    .answer-body strong,
+    .answer-body b {
+      color: var(--dew)
+    }
+
+    /* category color strip */
+    .cat-strip {
+      height: 3px;
+      background: linear-gradient(90deg, var(--sprout), var(--sun))
+    }
+
+    .answer-footer {
+      padding: 16px 28px;
+      border-top: 1px solid rgba(82, 183, 136, .1);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .related-label {
+      font-size: 12px;
+      color: rgba(150, 200, 170, .6);
+      text-transform: uppercase;
+      letter-spacing: 1px
+    }
+
+    .related-pills {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap
+    }
+
+    .related-pill {
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 12px;
+      background: rgba(82, 183, 136, .08);
+      border: 1px solid rgba(82, 183, 136, .2);
+      color: var(--dew);
+      cursor: pointer;
+      transition: all .2s;
+    }
+
+    .related-pill:hover {
+      background: rgba(82, 183, 136, .2)
+    }
+
+    .feedback-row {
+      display: flex;
+      gap: 8px;
+      align-items: center
+    }
+
+    .feedback-label {
+      font-size: 12px;
+      color: rgba(150, 200, 170, .6)
+    }
+
+    .fb-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      border: 1px solid rgba(82, 183, 136, .3);
+      background: transparent;
+      color: var(--dew);
+      cursor: pointer;
+      transition: all .2s;
+      font-size: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .fb-btn:hover {
+      background: rgba(82, 183, 136, .15)
+    }
+
+    .fb-btn.active {
+      background: var(--sprout);
+      border-color: var(--sprout);
+      color: var(--soil)
+    }
+
+    /* ---- LOADING STATE ---- */
+    .loading-card {
+      background: rgba(255, 255, 255, .04);
+      border: 1px solid rgba(82, 183, 136, .15);
+      border-radius: 24px;
+      padding: 48px;
+      text-align: center;
+      animation: fadeUp .4s var(--t) both;
+    }
+
+    .sprout-anim {
+      font-size: 48px;
+      display: inline-block;
+      animation: grow 1.5s ease-in-out infinite alternate;
+      transform-origin: bottom;
+    }
+
+    @keyframes grow {
+      from {
+        transform: scale(.8) rotate(-3deg)
+      }
+
+      to {
+        transform: scale(1.1) rotate(3deg)
+      }
+    }
+
+    .loading-text {
+      margin-top: 16px;
+      color: var(--sprout);
+      font-size: 15px
+    }
+
+    .loading-dots span {
+      animation: dot 1.4s infinite;
+      display: inline-block
+    }
+
+    .loading-dots span:nth-child(2) {
+      animation-delay: .2s
+    }
+
+    .loading-dots span:nth-child(3) {
+      animation-delay: .4s
+    }
+
+    @keyframes dot {
+
+      0%,
+      80%,
+      100% {
+        transform: translateY(0)
+      }
+
+      40% {
+        transform: translateY(-8px)
+      }
+    }
+
+    /* ---- OFFLINE BANNER ---- */
+    .offline-banner {
+      position: fixed;
+      top: 80px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(180, 60, 20, .9);
+      color: #fff;
+      padding: 10px 24px;
+      border-radius: 30px;
+      font-size: 13px;
+      display: none;
+      z-index: 200;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 100, 50, .3);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, .3);
+    }
+
+    .offline-banner.show {
+      display: flex;
+      align-items: center;
+      gap: 8px
+    }
+
+    /* ---- SCHEMES SECTION ---- */
+    .schemes-section {
+      max-width: 1100px;
+      margin: 0 auto 80px;
+      padding: 0 24px;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 32px;
+    }
+
+    .section-header h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 32px;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .section-divider {
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(90deg, rgba(82, 183, 136, .3), transparent)
+    }
+
+    .schemes-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 16px;
+    }
+
+    .scheme-card {
+      background: rgba(255, 255, 255, .04);
+      border: 1px solid rgba(82, 183, 136, .15);
+      border-radius: 20px;
+      padding: 24px;
+      cursor: pointer;
+      transition: all .3s var(--t);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .scheme-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: var(--color, var(--sprout));
+    }
+
+    .scheme-card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(82, 183, 136, .3);
+      background: rgba(255, 255, 255, .06);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, .3);
+    }
+
+    .scheme-icon {
+      font-size: 28px;
+      margin-bottom: 12px
+    }
+
+    .scheme-name {
+      font-size: 16px;
+      font-weight: 600;
+      color: #e8f5e9;
+      margin-bottom: 6px
+    }
+
+    .scheme-benefit {
+      font-size: 14px;
+      color: var(--sprout);
+      font-weight: 500;
+      margin-bottom: 8px
+    }
+
+    .scheme-cat {
+      font-size: 11px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: rgba(150, 200, 170, .5);
+    }
+
+    /* ---- QUICK TIPS ---- */
+    .tips-section {
+      max-width: 1100px;
+      margin: 0 auto 80px;
+      padding: 0 24px;
+    }
+
+    .tips-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 16px
+    }
+
+    .tip-card {
+      background: rgba(255, 255, 255, .04);
+      border: 1px solid rgba(82, 183, 136, .12);
+      border-radius: 20px;
+      padding: 28px;
+      transition: all .3s var(--t);
+    }
+
+    .tip-card:hover {
+      background: rgba(255, 255, 255, .06);
+      border-color: rgba(82, 183, 136, .25)
+    }
+
+    .tip-emoji {
+      font-size: 32px;
+      margin-bottom: 12px;
+      display: block
+    }
+
+    .tip-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--dew);
+      margin-bottom: 8px
+    }
+
+    .tip-text {
+      font-size: 13px;
+      color: rgba(180, 220, 190, .65);
+      line-height: 1.6
+    }
+
+    /* ---- FOOTER ---- */
+    footer {
+      border-top: 1px solid rgba(82, 183, 136, .1);
+      padding: 40px 32px;
+      text-align: center;
+      background: rgba(6, 20, 10, .5);
+    }
+
+    .footer-logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 20px;
+      font-weight: 900;
+      background: linear-gradient(135deg, var(--dew), var(--sun));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 12px
+    }
+
+    .footer-links {
+      display: flex;
+      justify-content: center;
+      gap: 24px;
+      margin-bottom: 20px;
+      flex-wrap: wrap
+    }
+
+    .footer-links a {
+      color: rgba(150, 200, 170, .6);
+      text-decoration: none;
+      font-size: 13px;
+      transition: color .2s
+    }
+
+    .footer-links a:hover {
+      color: var(--sprout)
+    }
+
+    .footer-copy {
+      font-size: 12px;
+      color: rgba(150, 200, 170, .35)
+    }
+
+    /* ---- TOAST ---- */
+    .toast {
+      position: fixed;
+      bottom: 32px;
+      right: 32px;
+      z-index: 999;
+      background: rgba(30, 60, 40, .95);
+      border: 1px solid rgba(82, 183, 136, .3);
+      border-radius: 16px;
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      transform: translateY(100px);
+      opacity: 0;
+      transition: all .4s var(--t);
+      backdrop-filter: blur(20px);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, .4);
+      max-width: 340px;
+    }
+
+    .toast.show {
+      transform: translateY(0);
+      opacity: 1
+    }
+
+    .toast-icon {
+      font-size: 20px;
+      flex-shrink: 0
+    }
+
+    .toast-text {
+      font-size: 14px;
+      color: #e8f5e9
+    }
+
+    /* ---- WEATHER WIDGET ---- */
+    .weather-pill {
+      padding: 8px 16px;
+      border-radius: 20px;
+      background: rgba(82, 183, 136, .08);
+      border: 1px solid rgba(82, 183, 136, .2);
+      font-size: 12px;
+      color: var(--dew);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      transition: all .2s;
+    }
+
+    .weather-pill:hover {
+      background: rgba(82, 183, 136, .15)
+    }
+
+    /* ---- ANIMATIONS ---- */
+    .hidden {
+      display: none !important
+    }
+
+    .fade-in {
+      animation: fadeIn .4s var(--t) both
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0
+      }
+
+      to {
+        opacity: 1
+      }
+    }
+
+    /* ---- RESPONSIVE ---- */
+    @media(max-width:640px) {
+      header {
+        padding: 16px 20px
+      }
+
+      .hero {
+        padding: 60px 20px 40px
+      }
+
+      .stats-strip {
+        gap: 20px
+      }
+
+      .search-box {
+        padding: 6px 6px 6px 16px;
+        flex-wrap: wrap
+      }
+
+      .ask-btn {
+        width: 100%;
+        justify-content: center;
+        padding: 14px
+      }
+
+      .search-box>*:not(.ask-btn) {
+        flex: 1 0 auto
+      }
+
+      .scheme-name {
+        font-size: 14px
+      }
+    }
+
+    /* ---- SCROLLBAR ---- */
+    ::-webkit-scrollbar {
+      width: 6px
+    }
+
+    ::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, .02)
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: rgba(82, 183, 136, .3);
+      border-radius: 3px
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(82, 183, 136, .5)
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Background -->
+  <div class="field-bg"></div>
+  <div class="stars" id="stars"></div>
+  <div class="fireflies" id="fireflies"></div>
+
+  <!-- Offline Banner -->
+  <div class="offline-banner" id="offlineBanner">
+    <span>🌿</span>
+    <span>You're offline — showing cached answers</span>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast">
+    <span class="toast-icon" id="toastIcon">✅</span>
+    <span class="toast-text" id="toastText"></span>
+  </div>
+
+  <div class="app">
+
+    <!-- HEADER -->
+    <header>
+      <a class="logo" href="#">
+        <div class="logo-icon">🌾</div>
+        <div>
+          <div class="logo-text">KrishiSahay</div>
+          <div class="logo-sub">AI Farm Assistant</div>
+        </div>
+      </a>
+      <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+        <div class="weather-pill" onclick="getWeather()">
+          <span id="weatherIcon">🌤️</span>
+          <span id="weatherText">Weather</span>
+        </div>
+        <div class="lang-selector">
+          <button class="lang-btn active" data-lang="en">EN</button>
+          <button class="lang-btn" data-lang="hi">हिं</button>
+          <button class="lang-btn" data-lang="te">తె</button>
+          <button class="lang-btn" data-lang="ta">த</button>
+        </div>
+      </div>
+    </header>
+
+    <!-- HERO -->
+    <section class="hero">
+      <div class="hero-badge">
+        <span class="dot"></span>
+        AI Powered by Knowledge Base + IBM Watson
+      </div>
+      <h1 class="hero-title">
+        <span class="line1">Every farmer deserves</span>
+        <span class="line2">expert guidance.</span>
+      </h1>
+      <p class="hero-sub" id="heroSub">Ask anything about crops, pests, fertilizers, or government schemes — in your
+        language.</p>
+
+      <div class="stats-strip">
+        <div class="stat"><span class="stat-num" id="statKb">15</span><span class="stat-label">Knowledge Articles</span>
+        </div>
+        <div class="stat"><span class="stat-num">8</span><span class="stat-label">Gov. Schemes</span></div>
+        <div class="stat"><span class="stat-num">4</span><span class="stat-label">Languages</span></div>
+        <div class="stat"><span class="stat-num">24/7</span><span class="stat-label">Always On</span></div>
+      </div>
+    </section>
+
+    <!-- SEARCH -->
+    <div class="search-section">
+      <div class="search-box">
+        <span class="search-icon">🔍</span>
+        <input id="searchInput" type="text" placeholder="Ask about wheat diseases, PM-KISAN, drip irrigation..."
+          autocomplete="off" onkeydown="if(event.key==='Enter')askQuestion()" />
+        <button class="voice-btn" id="voiceBtn" onclick="toggleVoice()" title="Voice input">🎤</button>
+        <button class="ask-btn" onclick="askQuestion()" id="askBtn">Ask Krishi →</button>
+      </div>
+
+      <!-- Category pills -->
+      <div class="categories">
+        <button class="cat-pill active" data-cat="all" onclick="setCategory(this,'all')">🌐 All</button>
+        <button class="cat-pill" data-cat="crops" onclick="setCategory(this,'crops')">🌾 Crops</button>
+        <button class="cat-pill" data-cat="pests" onclick="setCategory(this,'pests')">🐛 Pests</button>
+        <button class="cat-pill" data-cat="fertilizers" onclick="setCategory(this,'fertilizers')">🧪
+          Fertilizers</button>
+        <button class="cat-pill" data-cat="schemes" onclick="setCategory(this,'schemes')">🏛️ Schemes</button>
+        <button class="cat-pill" data-cat="soil" onclick="setCategory(this,'soil')">🌍 Soil</button>
+        <button class="cat-pill" data-cat="irrigation" onclick="setCategory(this,'irrigation')">💧 Irrigation</button>
+        <button class="cat-pill" data-cat="market" onclick="setCategory(this,'market')">📊 Market</button>
+        <button class="cat-pill" data-cat="weather" onclick="setCategory(this,'weather')">☁️ Weather</button>
+      </div>
+    </div>
+
+    <!-- ANSWER PANEL -->
+    <div id="answerSection" class="answer-panel hidden"></div>
+
+    <!-- QUICK TIPS -->
+    <section class="tips-section">
+      <div class="section-header">
+        <h2>Seasonal Tips</h2>
+        <div class="section-divider"></div>
+      </div>
+      <div class="tips-grid" id="tipsGrid">
+        <div class="tip-card"><span class="tip-emoji">🌱</span>
+          <div class="tip-title">Rabi Season Alert</div>
+          <div class="tip-text">October-November is the best time to sow wheat and mustard. Ensure pre-sowing irrigation
+            for good germination.</div>
+        </div>
+        <div class="tip-card"><span class="tip-emoji">💧</span>
+          <div class="tip-title">Water Conservation</div>
+          <div class="tip-text">Apply mulch (dry grass/straw) to conserve moisture, reduce irrigation frequency by
+            30-40%, and suppress weeds.</div>
+        </div>
+        <div class="tip-card"><span class="tip-emoji">🐝</span>
+          <div class="tip-title">Pollinator Friendly</div>
+          <div class="tip-text">Avoid pesticide spray during flowering. Early morning or evening sprays protect bees and
+            improve fruit set by up to 40%.</div>
+        </div>
+        <div class="tip-card"><span class="tip-emoji">📱</span>
+          <div class="tip-title">Kisan Suvidha App</div>
+          <div class="tip-text">Download the free government app for real-time mandi prices, weather forecasts, and
+            expert helpline numbers.</div>
+        </div>
+        <div class="tip-card"><span class="tip-emoji">🧪</span>
+          <div class="tip-title">Soil Testing Free</div>
+          <div class="tip-text">Get free Soil Health Card from your nearest Krishi Vigyan Kendra. Apply fertilizers
+            based on actual soil nutrient levels.</div>
+        </div>
+        <div class="tip-card"><span class="tip-emoji">☎️</span>
+          <div class="tip-title">Expert Helpline</div>
+          <div class="tip-text">Kisan Call Center: 1800-180-1551 (Toll Free). Available 6AM-10PM in 22 languages. Free
+            expert agricultural advice.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SCHEMES SECTION -->
+    <section class="schemes-section">
+      <div class="section-header">
+        <h2>Government Schemes</h2>
+        <div class="section-divider"></div>
+      </div>
+      <div class="schemes-grid" id="schemesGrid">Loading schemes...</div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer>
+      <div class="footer-logo">🌾 KrishiSahay</div>
+      <div class="footer-links">
+        <a href="https://pmkisan.gov.in" target="_blank">PM-KISAN</a>
+        <a href="https://pmfby.gov.in" target="_blank">PMFBY</a>
+        <a href="https://enam.gov.in" target="_blank">eNAM</a>
+        <a href="https://agmarknet.gov.in" target="_blank">Agmarknet</a>
+        <a href="https://mkisan.gov.in" target="_blank">mKisan</a>
+        <a href="tel:18001801551">Helpline: 1800-180-1551</a>
+      </div>
+      <div class="footer-copy">KrishiSahay © 2025 — AI-powered agricultural assistance for every Indian farmer</div>
+    </footer>
+
+  </div><!-- end .app -->
+
+  <script>
+    // ============================================================
+    // KrishiSahay Frontend Application
+    // ============================================================
+
+    const API_BASE = 'http://localhost:8000';
+    let currentCategory = 'all';
+    let currentLang = 'en';
+    let isRecording = false;
+    let recognition = null;
+    let cachedAnswers = {};
+    let currentQueryId = null;
+
+    // ---- UI TEXT BY LANGUAGE ----
+    const UI_TEXT = {
+      en: { placeholder: 'Ask about wheat diseases, PM-KISAN, drip irrigation...', heroSub: 'Ask anything about crops, pests, fertilizers, or government schemes — in your language.', asking: 'Consulting our agricultural knowledge base...', noResult: 'No specific answer found. Please call Kisan Call Center: 1800-180-1551' },
+      hi: { placeholder: 'गेहूं की बीमारी, PM-KISAN, ड्रिप सिंचाई के बारे में पूछें...', heroSub: 'फसल, कीट, खाद या सरकारी योजनाओं के बारे में कुछ भी पूछें।', asking: 'कृषि ज्ञान आधार से उत्तर खोज रहे हैं...', noResult: 'उत्तर नहीं मिला। किसान कॉल सेंटर: 1800-180-1551 पर कॉल करें।' },
+      te: { placeholder: 'గోధుమ వ్యాధులు, PM-KISAN, డ్రిప్ సేద్యం గురించి అడగండి...', heroSub: 'పంటలు, తెగుళ్ళు, ఎరువులు లేదా ప్రభుత్వ పథకాల గురించి ఏదైనా అడగండి.', asking: 'వ్యవసాయ జ్ఞాన స్థావరం నుండి సమాధానం వెతుకుతున్నారు...', noResult: 'సమాధానం దొరకలేదు. కిసాన్ కాల్ సెంటర్: 1800-180-1551 కి కాల్ చేయండి.' },
+      ta: { placeholder: 'கோதுமை நோய்கள், PM-KISAN பற்றி கேளுங்கள்...', heroSub: 'பயிர்கள், பூச்சிகள், உரங்கள் அல்லது அரசு திட்டங்கள் பற்றி கேளுங்கள்.', asking: 'வேளாண் அறிவுத் தளத்தில் தேடுகிறோம்...', noResult: 'பதில் கிடைக்கவில்லை. கிசான் கால் சென்டர்: 1800-180-1551' }
+    };
+
+    const SCHEME_ICONS = { 'Financial Aid': '💰', 'Insurance': '🛡️', 'Credit': '💳', 'Infrastructure': '🚿', 'Market': '📊', 'Soil': '🌍', 'Organic': '🌿', 'Development': '🏗️' };
+    const CAT_COLORS = { crops: '#16a34a', pests: '#dc2626', fertilizers: '#9333ea', schemes: '#2563eb', soil: '#854d0e', irrigation: '#0891b2', market: '#d97706', weather: '#6366f1' };
+
+    // ---- INIT ----
+    document.addEventListener('DOMContentLoaded', () => {
+      generateStars();
+      generateFireflies();
+      loadSchemes();
+      setupLangButtons();
+      loadCachedStats();
+      setupOfflineDetection();
+      loadFromCache();
+    });
+
+    function generateStars() {
+      const c = document.getElementById('stars');
+      for (let i = 0; i < 80; i++) {
+        const s = document.createElement('div');
+        s.className = 'star';
+        const size = Math.random() * 2 + 1;
+        s.style.cssText = `width:${size}px;height:${size}px;left:${Math.random() * 100}%;top:${Math.random() * 60}%;--d:${2 + Math.random() * 4}s;--delay:${Math.random() * 4}s`;
+        c.appendChild(s);
+      }
+    }
+
+    function generateFireflies() {
+      const c = document.getElementById('fireflies');
+      for (let i = 0; i < 12; i++) {
+        const f = document.createElement('div');
+        f.className = 'firefly';
+        const x = (Math.random() - 0.5) * 200, y = (Math.random() - 0.5) * 300;
+        f.style.cssText = `left:${10 + Math.random() * 80}%;top:${30 + Math.random() * 60}%;--d:${4 + Math.random() * 8}s;--dl:-${Math.random() * 8}s;--tx:${x}px;--ty:${y}px`;
+        c.appendChild(f);
+      }
+    }
+
+    function setupLangButtons() {
+      document.querySelectorAll('.lang-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          currentLang = btn.dataset.lang;
+          updateUILanguage();
+        });
+      });
+    }
+
+    function updateUILanguage() {
+      const t = UI_TEXT[currentLang] || UI_TEXT.en;
+      document.getElementById('searchInput').placeholder = t.placeholder;
+      document.getElementById('heroSub').textContent = t.heroSub;
+    }
+
+    function setCategory(el, cat) {
+      document.querySelectorAll('.cat-pill').forEach(p => p.classList.remove('active'));
+      el.classList.add('active');
+      currentCategory = cat;
+    }
+
+    // ---- SCHEMES LOADER ----
+    async function loadSchemes() {
+      const grid = document.getElementById('schemesGrid');
+      try {
+        const res = await fetch(`${API_BASE}/schemes`);
+        if (!res.ok) throw new Error();
+        const data = await res.json();
+        renderSchemes(data.schemes);
+      } catch {
+        // Use hardcoded fallback
+        renderSchemes([
+          { name: 'PM-KISAN', benefit: '₹6,000/year', category: 'Financial Aid', color: '#16a34a' },
+          { name: 'PMFBY', benefit: 'Crop Insurance', category: 'Insurance', color: '#2563eb' },
+          { name: 'Kisan Credit Card', benefit: 'Low-interest Credit', category: 'Credit', color: '#9333ea' },
+          { name: 'PMKSY', benefit: '55-75% Irrigation Subsidy', category: 'Infrastructure', color: '#0891b2' },
+          { name: 'eNAM', benefit: 'Online Crop Market', category: 'Market', color: '#d97706' },
+          { name: 'Soil Health Card', benefit: 'Free Soil Testing', category: 'Soil', color: '#854d0e' },
+          { name: 'PKVY', benefit: 'Organic Farming Support', category: 'Organic', color: '#15803d' },
+          { name: 'RKVY', benefit: 'Agriculture Development', category: 'Development', color: '#dc2626' },
+        ]);
+      }
+    }
+
+    function renderSchemes(schemes) {
+      const grid = document.getElementById('schemesGrid');
+      grid.innerHTML = schemes.map(s => `
+    <div class="scheme-card" style="--color:${s.color || '#52b788'}" onclick="searchScheme('${s.name}')">
+      <div class="scheme-icon">${SCHEME_ICONS[s.category] || '📋'}</div>
+      <div class="scheme-name">${s.name}</div>
+      <div class="scheme-benefit">${s.benefit}</div>
+      <div class="scheme-cat">${s.category}</div>
+    </div>
+  `).join('');
+    }
+
+    function searchScheme(name) {
+      document.getElementById('searchInput').value = `Tell me about ${name} scheme`;
+      document.getElementById('searchInput').scrollIntoView({ behavior: 'smooth' });
+      askQuestion();
+    }
+
+    // ---- MAIN QUERY FUNCTION ----
+    async function askQuestion() {
+      const input = document.getElementById('searchInput');
+      const query = input.value.trim();
+      if (!query) { showToast('🌿', 'Please enter your question first'); return; }
+
+      const btn = document.getElementById('askBtn');
+      btn.disabled = true;
+      btn.textContent = '⏳ Thinking...';
+
+      showLoading();
+
+      // Check cache first if offline
+      const cacheKey = `${currentLang}:${currentCategory}:${query.toLowerCase()}`;
+      if (!navigator.onLine && cachedAnswers[cacheKey]) {
+        setTimeout(() => { renderAnswer(cachedAnswers[cacheKey], true); resetBtn(); }, 400);
+        return;
+      }
+
+      try {
+        const res = await fetch(`${API_BASE}/query`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ query, language: currentLang, category: currentCategory })
+        });
+
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+
+        // Cache it
+        cachedAnswers[cacheKey] = data;
+        saveToCache();
+
+        renderAnswer(data, false);
+      } catch (err) {
+        // Try offline cache
+        if (cachedAnswers[cacheKey]) {
+          renderAnswer(cachedAnswers[cacheKey], true);
+          showToast('🌿', 'Showing cached answer (offline)');
+        } else {
+          renderError(err.message);
+        }
+      }
+      resetBtn();
+    }
+
+    function resetBtn() {
+      const btn = document.getElementById('askBtn');
+      btn.disabled = false;
+      btn.textContent = 'Ask Krishi →';
+    }
+
+    function showLoading() {
+      const t = UI_TEXT[currentLang] || UI_TEXT.en;
+      document.getElementById('answerSection').classList.remove('hidden');
+      document.getElementById('answerSection').innerHTML = `
+    <div class="loading-card">
+      <div class="sprout-anim">🌱</div>
+      <div class="loading-text">${t.asking}<br><span class="loading-dots"><span>.</span><span>.</span><span>.</span></span></div>
+    </div>`;
+      document.getElementById('answerSection').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    function renderAnswer(data, fromCache = false) {
+      currentQueryId = data.query_id;
+      const section = document.getElementById('answerSection');
+      const catColor = CAT_COLORS[data.category] || '#52b788';
+      const methodLabel = data.method === 'ibm_watson' ? '<span class="method-badge ibm">IBM Watson AI</span>' : '<span class="method-badge kb">Knowledge Base</span>';
+      const cacheLabel = fromCache ? '<span class="method-badge kb">📦 Cached</span>' : '';
+
+      const relatedHTML = data.related && data.related.length ? `
+    <div>
+      <div class="related-label">Related</div>
+      <div class="related-pills">
+        ${data.related.map(r => `<span class="related-pill" onclick="searchRelated('${r.question.replace(/'/g, "\\'")}')">📎 ${r.question.substring(0, 45)}${r.question.length > 45 ? '...' : ''}</span>`).join('')}
+      </div>
+    </div>` : '<div></div>';
+
+      // Format answer with some basic markdown-like enhancement
+      const formattedAnswer = formatAnswer(data.answer);
+
+      section.innerHTML = `
+    <div class="answer-card fade-in">
+      <div class="cat-strip" style="background:linear-gradient(90deg,${catColor},${catColor}88)"></div>
+      <div class="answer-header">
+        <div class="answer-query">
+          <span>💬</span>
+          <span>"${data.query.substring(0, 60)}${data.query.length > 60 ? '...' : ''}"</span>
+        </div>
+        <div class="answer-meta">${methodLabel}${cacheLabel}</div>
+      </div>
+      <div class="answer-body">${formattedAnswer}</div>
+      <div class="answer-footer">
+        ${relatedHTML}
+        <div class="feedback-row">
+          <span class="feedback-label">Helpful?</span>
+          <button class="fb-btn" id="fbUp" onclick="sendFeedback(5)" title="Helpful">👍</button>
+          <button class="fb-btn" id="fbDown" onclick="sendFeedback(1)" title="Not helpful">👎</button>
+        </div>
+      </div>
+    </div>`;
+      section.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    function formatAnswer(text) {
+      // Bold numbers with units
+      text = text.replace(/(\d+[\d,]*\s*(?:kg|g|ml|liter|litre|rupees|Rs|₹|%|days|weeks|months|cm|mm|quintals|tonnes|hours))/gi, '<strong>$1</strong>');
+      // Bold numbered items
+      text = text.replace(/(\d+\))/g, '<strong>$1</strong>');
+      // Convert newlines to br
+      text = text.replace(/\n/g, '<br>');
+      return text;
+    }
+
+    function renderError(msg) {
+      document.getElementById('answerSection').innerHTML = `
+    <div class="answer-card fade-in" style="border-color:rgba(239,68,68,.3)">
+      <div class="cat-strip" style="background:linear-gradient(90deg,#ef4444,#dc2626)"></div>
+      <div class="answer-body" style="text-align:center;padding:40px">
+        <div style="font-size:36px;margin-bottom:16px">🌧️</div>
+        <div style="color:#fca5a5;margin-bottom:8px">Couldn't reach the server</div>
+        <div style="font-size:13px;color:rgba(200,200,200,.5)">Check if the backend is running (python main.py)</div>
+        <div style="margin-top:20px;font-size:14px;color:var(--sprout)">📞 Call Kisan Helpline: <strong>1800-180-1551</strong></div>
+      </div>
+    </div>`;
+    }
+
+    function searchRelated(q) {
+      document.getElementById('searchInput').value = q;
+      askQuestion();
+    }
+
+    // ---- FEEDBACK ----
+    async function sendFeedback(rating) {
+      if (!currentQueryId) return;
+      document.getElementById(rating >= 3 ? 'fbUp' : 'fbDown').classList.add('active');
+      showToast('🙏', 'Thank you for your feedback!');
+      try {
+        await fetch(`${API_BASE}/feedback`, {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ query_id: currentQueryId, rating })
+        });
+      } catch { }
+    }
+
+    // ---- VOICE INPUT ----
+    function toggleVoice() {
+      if (isRecording) stopRecording();
+      else startRecording();
+    }
+
+    function startRecording() {
+      if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+        showToast('🎤', 'Voice not supported in this browser. Try Chrome.');
+        return;
+      }
+      const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+      recognition = new SR();
+      recognition.lang = { en: 'en-IN', hi: 'hi-IN', te: 'te-IN', ta: 'ta-IN' }[currentLang] || 'en-IN';
+      recognition.continuous = false;
+      recognition.interimResults = false;
+      recognition.onresult = e => {
+        document.getElementById('searchInput').value = e.results[0][0].transcript;
+        stopRecording();
+        askQuestion();
+      };
+      recognition.onerror = () => stopRecording();
+      recognition.onend = () => stopRecording();
+      recognition.start();
+      isRecording = true;
+      document.getElementById('voiceBtn').classList.add('recording');
+      document.getElementById('voiceBtn').textContent = '🔴';
+    }
+
+    function stopRecording() {
+      if (recognition) recognition.stop();
+      isRecording = false;
+      document.getElementById('voiceBtn').classList.remove('recording');
+      document.getElementById('voiceBtn').textContent = '🎤';
+    }
+
+    // ---- WEATHER ----
+    async function getWeather() {
+      document.getElementById('weatherText').textContent = 'Loading...';
+      try {
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(async pos => {
+            const { latitude: lat, longitude: lon } = pos.coords;
+            const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&hourly=precipitation_probability`);
+            const data = await res.json();
+            const cw = data.current_weather;
+            const tempC = Math.round(cw.temperature);
+            const wcode = cw.weathercode;
+            const emoji = wcode === 0 ? '☀️' : wcode <= 3 ? '⛅' : wcode <= 67 ? '🌧️' : '❄️';
+            document.getElementById('weatherIcon').textContent = emoji;
+            document.getElementById('weatherText').textContent = `${tempC}°C`;
+            showToast(emoji, `Current temperature: ${tempC}°C`);
+          }, () => {
+            document.getElementById('weatherText').textContent = 'Location denied';
+          });
+        }
+      } catch {
+        document.getElementById('weatherText').textContent = 'Weather N/A';
+      }
+    }
+
+    // ---- OFFLINE ----
+    function setupOfflineDetection() {
+      const banner = document.getElementById('offlineBanner');
+      window.addEventListener('offline', () => banner.classList.add('show'));
+      window.addEventListener('online', () => banner.classList.remove('show'));
+      if (!navigator.onLine) banner.classList.add('show');
+    }
+
+    // ---- LOCAL CACHE ----
+    function saveToCache() {
+      try { localStorage.setItem('ks_cache', JSON.stringify(cachedAnswers)); } catch { }
+    }
+    function loadFromCache() {
+      try {
+        const c = localStorage.getItem('ks_cache');
+        if (c) cachedAnswers = JSON.parse(c);
+      } catch { }
+    }
+
+    // ---- STATS ----
+    async function loadCachedStats() {
+      try {
+        const res = await fetch(`${API_BASE}/stats`);
+        const d = await res.json();
+        document.getElementById('statKb').textContent = (d.kb_items || 15) + '+';
+      } catch { }
+    }
+
+    // ---- TOAST ----
+    function showToast(icon, text) {
+      const toast = document.getElementById('toast');
+      document.getElementById('toastIcon').textContent = icon;
+      document.getElementById('toastText').textContent = text;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 3500);
+    }
+
+    // ---- SUGGESTED QUERIES on load ----
+    const suggestions = [
+      'How to grow wheat in Rabi season?',
+      'What is PM-KISAN scheme?',
+      'How to control aphids naturally?',
+      'Best fertilizer for paddy?',
+      'How to apply for crop insurance?',
+      'Drip irrigation subsidy available?',
+    ];
+    let si = 0;
+    setInterval(() => {
+      const inp = document.getElementById('searchInput');
+      if (document.activeElement !== inp && !inp.value) {
+        inp.placeholder = suggestions[si++ % suggestions.length];
+      }
+    }, 3500);
+  </script>
+
+  <!-- SERVICE WORKER REGISTRATION -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js').catch(() => { });
+      });
+    }
+  </script>
+</body>
+
+</html>

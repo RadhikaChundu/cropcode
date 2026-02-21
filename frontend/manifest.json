@@ -1,0 +1,12 @@
+{
+  "name": "KrishiSahay - AI Farm Assistant",
+  "short_name": "KrishiSahay",
+  "description": "Generative AI powered agricultural query resolution for Indian farmers",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0d2818",
+  "theme_color": "#0d2818",
+  "icons": [
+    { "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌾</text></svg>", "sizes": "192x192", "type": "image/svg+xml" }
+  ]
+}
